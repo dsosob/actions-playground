@@ -1,0 +1,47 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - app/**
+
+env:
+  AWS_REGION : "us-east-2"
+  REPOSITORY_NAME: ${{ github.event.repository.name }}
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  COMMIT_ID: ${{ github.sha }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  DeployToAmplify:
+    name: Deploy
+    runs-on: unbuntu-latest
+    # env:
+    #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #   AWS_DEFAULT_REGION: us-east-1
+    #   AWS_DEFAULT_OUTPUT: json
+    steps:
+      - name: Check variables
+        run: |
+          echo 'repository : '$REPOSITORY_NAME
+          echo 'branch : '$BRANCH_NAME
+          echo 'commitId: '$COMMIT_ID
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      # - name: Configure aws credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}
+      #     role-session-name: sessionBuildAndDeploy
+      #     aws-region: ${{ env.AWS_REGION }}
+      #     mask-aws-account-id: false
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          echo 'Deploy.....'
